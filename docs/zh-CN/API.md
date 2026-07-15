@@ -36,9 +36,17 @@
 
 ### `POST /api/sessions`
 
-创建匿名 User 和 Assessment Session。
+新浏览器会创建匿名 User 和 Assessment Session，并设置 30 天 HttpOnly Cookie。已有匿名用户若仍有未完成测评，则返回原 Session 和 `resumed: true`，避免覆盖已保存进度。
 
-状态码：`201 Created`。
+状态码：新建为 `201 Created`，恢复未完成 Session 为 `200 OK`。
+
+### `GET /api/sessions/current`
+
+根据 HttpOnly 匿名 Cookie 返回最近一次测评的 Session、状态、当前步骤、版本和已保存 Profile。没有有效匿名身份或历史测评时返回：
+
+```json
+{ "currentSession": null }
+```
 
 ### `GET /api/sessions/{sessionId}/progress`
 

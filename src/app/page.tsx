@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {
   ArrowIcon,
   BoltIcon,
@@ -9,6 +8,7 @@ import {
   ShieldIcon,
   SparkIcon,
 } from "@/components/icons";
+import { AssessmentEntryLink } from "@/components/assessment-entry-link";
 import { Marquee } from "@/components/marquee";
 import { CountUp, Reveal } from "@/components/motion";
 
@@ -109,13 +109,11 @@ export default function Home() {
           <BrandMark light />
           <div className="flex items-center gap-5">
             <span className="hidden text-xs text-white/48 md:block">更了解自己，才能走得更远</span>
-            <Link
-              href="/assessment"
+            <AssessmentEntryLink
+              defaultLabel="开始测评"
               className="group inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2.5 text-xs font-semibold transition duration-300 hover:border-[var(--lime)] hover:bg-[var(--lime)] hover:text-[#071c16]"
-            >
-              开始测评
-              <ArrowIcon className="size-4" />
-            </Link>
+              iconClassName="size-4"
+            />
           </div>
         </nav>
 
@@ -134,15 +132,11 @@ export default function Home() {
               用几分钟梳理身体信息、生活节奏与个人目标，获得一份清晰、易懂、真正属于你的趋势参考。
             </p>
             <div className="motion-rise motion-rise-delay-3 mt-10 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
-              <Link
-                href="/assessment"
+              <AssessmentEntryLink
+                defaultLabel="开始我的测评"
                 className="group inline-flex min-w-56 items-center justify-between gap-8 rounded-full bg-[var(--lime)] px-6 py-4 font-semibold text-[#071c16] shadow-[0_18px_55px_rgba(196,242,75,.22)] transition duration-300 hover:-translate-y-1 hover:bg-[var(--lime-bright)]"
-              >
-                开始我的测评
-                <span className="grid size-8 place-items-center rounded-full bg-[#071c16] text-[var(--lime)] transition duration-300 group-hover:translate-x-1">
-                  <ArrowIcon />
-                </span>
-              </Link>
+                iconContainerClassName="grid size-8 place-items-center rounded-full bg-[#071c16] text-[var(--lime)] transition duration-300 group-hover:translate-x-1"
+              />
               <div className="flex items-center gap-3 text-sm text-white/55">
                 <span className="flex -space-x-2">
                   {["#ff6a45", "#d8ff5c", "#6fe4be"].map((color) => (
@@ -347,15 +341,11 @@ export default function Home() {
               <p className="mt-7 max-w-xl text-base leading-8 text-white/60">
                 认真听听身体的声音，找到属于你的健康节奏。一切从这里开始。
               </p>
-              <Link
-                href="/assessment"
+              <AssessmentEntryLink
+                defaultLabel="现在开始"
                 className="group mt-10 inline-flex items-center gap-5 rounded-full bg-[var(--lime)] px-7 py-4 text-lg font-semibold text-[#071c16] shadow-[0_18px_55px_rgba(196,242,75,.22)] transition duration-300 hover:-translate-y-1 hover:bg-[var(--lime-bright)]"
-              >
-                现在开始
-                <span className="grid size-9 place-items-center rounded-full bg-[#071c16] text-[var(--lime)] transition duration-300 group-hover:translate-x-1">
-                  <ArrowIcon />
-                </span>
-              </Link>
+                iconContainerClassName="grid size-9 place-items-center rounded-full bg-[#071c16] text-[var(--lime)] transition duration-300 group-hover:translate-x-1"
+              />
             </div>
           </div>
         </Reveal>

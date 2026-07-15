@@ -154,7 +154,17 @@ gender | goal | age | height | weight | target-weight | activity
 - 不同请求携带旧 `version`：返回 `409 VERSION_CONFLICT`。
 - 每一步使用严格 Zod Schema，拒绝越界值和额外字段。
 
-### 恢复进度
+### 找回最近一次测评
+
+```http
+GET /api/sessions/current
+```
+
+浏览器通过 30 天有效的 HttpOnly 匿名 Cookie 识别用户。后端返回该用户最近一次测评的 `sessionId`、状态、步骤、版本和已保存 Profile；新浏览器返回 `currentSession: null`。首页会据此显示“继续上次测评”或“查看我的报告”。
+
+重复调用 `POST /api/sessions` 时，如果当前匿名用户仍有未完成测评，接口会返回原 Session 并标记 `resumed: true`，不会覆盖已有进度。
+
+### 恢复指定进度
 
 ```http
 GET /api/sessions/:sessionId/progress

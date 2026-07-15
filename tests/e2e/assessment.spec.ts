@@ -30,7 +30,10 @@ test("restores progress and preserves full access after mock payment", async ({ 
   await page.getByRole("button", { name: /保存并继续/ }).click();
   await expect(page.getByText("你的身高是多少？")).toBeVisible();
 
-  await page.reload();
+  // Simulate closing the assessment and later reopening the site in the same browser.
+  await page.goto("/");
+  await expect(page.getByRole("link", { name: "继续上次测评" }).first()).toBeVisible();
+  await page.getByRole("link", { name: "继续上次测评" }).first().click();
   await expect(page.getByText("你的身高是多少？")).toBeVisible();
   await expect(page.getByText("已恢复上次保存的进度")).toBeVisible();
 
@@ -58,6 +61,11 @@ test("restores progress and preserves full access after mock payment", async ({ 
   await expect(page.getByText("完整报告 · 已解锁")).toBeVisible();
   await page.reload();
   await expect(page.getByText("逐周体重趋势")).toBeVisible();
+  await expect(page.getByText("完整报告 · 已解锁")).toBeVisible();
+
+  await page.goto("/");
+  await expect(page.getByRole("link", { name: "查看我的报告" }).first()).toBeVisible();
+  await page.getByRole("link", { name: "查看我的报告" }).first().click();
   await expect(page.getByText("完整报告 · 已解锁")).toBeVisible();
   expect(browserErrors).toEqual([]);
 });

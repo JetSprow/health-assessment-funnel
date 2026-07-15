@@ -154,7 +154,17 @@ gender | goal | age | height | weight | target-weight | activity
 - A new request with a stale version: `409 VERSION_CONFLICT`.
 - Every payload uses a strict Zod Schema and rejects extra or out-of-range fields.
 
-### Restore progress
+### Find the latest assessment
+
+```http
+GET /api/sessions/current
+```
+
+The browser is recognized through the 30-day HttpOnly anonymous Cookie. The backend returns the latest assessment `sessionId`, status, step, version and saved Profile; a new browser receives `currentSession: null`. The landing page uses this response to show “Continue assessment” or “View report”.
+
+If `POST /api/sessions` is called again while the authenticated anonymous user still has an unfinished assessment, it returns the existing Session with `resumed: true` instead of replacing saved progress.
+
+### Restore a specific assessment
 
 ```http
 GET /api/sessions/:sessionId/progress

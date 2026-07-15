@@ -36,9 +36,17 @@ Runtime and database readiness probe.
 
 ### `POST /api/sessions`
 
-Creates an anonymous User and Assessment Session.
+A new browser receives an anonymous User, Assessment Session and 30-day HttpOnly Cookie. If the authenticated anonymous user already has an unfinished assessment, the endpoint returns that Session with `resumed: true` instead of replacing saved progress.
 
-Status: `201 Created`.
+Status: `201 Created` for a new Session and `200 OK` when resuming an unfinished Session.
+
+### `GET /api/sessions/current`
+
+Uses the HttpOnly anonymous Cookie to return the latest assessment Session, status, current step, version and saved Profile. A browser with no valid anonymous identity or history receives:
+
+```json
+{ "currentSession": null }
+```
 
 ### `GET /api/sessions/{sessionId}/progress`
 
