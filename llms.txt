@@ -1,0 +1,64 @@
+# Health Assessment Funnel
+
+Purpose: anonymous seven-step health-assessment demo with incremental persistence, server-side calculation, redacted/full result access and idempotent Mock payment. The algorithm is demonstrative and non-clinical.
+
+Primary documentation:
+- README.md: bilingual landing page
+- README.en.md: complete English project guide
+- README.zh-CN.md: complete Simplified Chinese project guide
+- AI_QUICKSTART.md: bilingual AI entry
+- docs/en/AI_QUICKSTART.md: complete English agent guide
+- docs/zh-CN/AI_QUICKSTART.md: complete Chinese agent guide
+- docs/en/README.md and docs/zh-CN/README.md: documentation indexes
+
+Repository map:
+- src/app/: Next.js App Router pages and UI
+- src/app/api/: HTTP Route Handlers
+- src/domain/assessment/: strict Zod schemas, deterministic calculation and result DTOs
+- src/server/: Prisma, anonymous authentication and API helpers
+- prisma/schema.prisma: authoritative database schema
+- prisma/migrations/: versioned production migrations
+- src/generated/prisma/: generated code; never hand-edit
+- tests/unit/: domain and route tests
+- tests/e2e/: mobile browser and real-PostgreSQL API tests
+- scripts/: deploy, backup and demo replay tools
+- deploy/nginx/: reverse proxy configuration
+
+Seven step keys:
+- gender
+- goal
+- age
+- height
+- weight
+- target-weight
+- activity
+
+Critical invariants:
+- Raw anonymous token only in an HttpOnly Cookie; database stores SHA-256 hash.
+- Verify resource ownership for every Session, result and payment request.
+- Preserve request idempotency, payload conflict detection and optimistic version locking.
+- Validate the complete Profile again on submit.
+- Calculate BMI, calories, target date and projection on the server only.
+- Use separate allow-listed locked and full result DTO constructors.
+- Keep PaymentEvent creation and Subscription activation transactional.
+- /pay and /api/pay must remain behaviorally equivalent.
+- Mock payment is not real billing; calculations are not medical advice.
+- PostgreSQL must not be publicly exposed.
+- Current HTTP/IP demo uses fictional data only.
+
+Quality commands:
+- npm run db:validate
+- npm run lint
+- npm run typecheck
+- npm test
+- npm run build
+- npm run test:e2e
+- npm audit --audit-level=high
+- git diff --check
+
+AI change rules:
+- Read AGENTS.md and the relevant node_modules/next/dist/docs/ guide before changing Next.js behavior.
+- Do not edit generated Prisma files; update prisma/schema.prisma and migrations.
+- Add regression tests for fixes and run the complete quality gate.
+- Update both docs/en/ and docs/zh-CN/ when contracts or behavior change.
+- Never commit .env files, credentials, server passwords, production tokens or real health data.

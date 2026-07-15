@@ -1,1 +1,2 @@
 @AGENTS.md
+@AI_QUICKSTART.md
