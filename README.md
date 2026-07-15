@@ -200,10 +200,31 @@ erDiagram
 - Mock 支付幂等性及付费前后结果访问切换。
 - 移动端真实浏览器中的创建、填写、刷新恢复、提交、解锁和付费后刷新。
 
-CI 在 Push 和 Pull Request 时执行安装、Lint、类型检查、测试与生产构建。
+CI 在 Push 和 Pull Request 时执行依赖安装、Lint、类型检查、Vitest、生产构建，并在 PostgreSQL 服务上运行 Playwright 端到端测试。
 
-## 项目文档
+## 生产部署
+
+仓库提供 Docker Compose 单机生产拓扑：Nginx、Next.js Standalone、一次性 Prisma Migration 和私有 PostgreSQL 16。数据库端口不会暴露到公网。
+
+```bash
+git clone https://github.com/JetSprow/health-assessment-funnel.git
+cd health-assessment-funnel
+cp .env.production.example .env.production
+# 修改生产数据库密码；HTTP/IP 临时部署保持 COOKIE_SECURE=false
+
+docker compose --env-file .env.production build --pull
+docker compose --env-file .env.production up -d
+```
+
+完整步骤、升级与回滚说明见 [Dedicated Server Deployment](docs/DEPLOYMENT.md)。
+
+## 完整文档索引
 
 - [详细开发计划](docs/DEVELOPMENT_PLAN.md)
-- [Prisma Schema](prisma/schema.prisma)
-- [初始 Migration](prisma/migrations/20260715142000_init/migration.sql)
+- [系统架构](docs/ARCHITECTURE.md)
+- [API 契约](docs/API.md)
+- [专用服务器部署](docs/DEPLOYMENT.md)
+- [运维手册](docs/OPERATIONS.md)
+- [安全说明](docs/SECURITY.md)
+- [测试策略](docs/TESTING.md)
+- [AI 协作复盘](docs/AI_RETROSPECTIVE.md)

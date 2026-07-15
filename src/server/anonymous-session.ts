@@ -24,7 +24,10 @@ export async function setAnonymousSessionCookie(
   const cookieStore = await cookies();
   cookieStore.set(COOKIE_NAME, `${userId}.${token}`, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure:
+      process.env.COOKIE_SECURE === undefined
+        ? process.env.NODE_ENV === "production"
+        : process.env.COOKIE_SECURE === "true",
     sameSite: "lax",
     path: "/",
     maxAge: COOKIE_MAX_AGE_SECONDS,
