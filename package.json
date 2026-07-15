@@ -6,21 +6,52 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "db:format": "prisma format",
+    "db:validate": "prisma validate",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "postinstall": "prisma generate",
+    "db:push": "prisma db push",
+    "db:deploy": "prisma migrate deploy",
+    "db:local": "prisma dev -d -n health-assessment",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "next": "16.2.10",
+    "pg": "^8.22.0",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^20",
+    "@types/pg": "^8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.0.3",
+    "@vitest/coverage-v8": "^4.1.10",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "jsdom": "^29.1.1",
+    "prisma": "^7.8.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "tsx": "^4.23.1",
+    "typescript": "^5",
+    "vitest": "^4.1.10"
+  },
+  "overrides": {
+    "@hono/node-server": "1.19.13",
+    "postcss": "8.5.19"
   }
 }
