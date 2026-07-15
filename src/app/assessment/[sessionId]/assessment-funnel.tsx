@@ -1,17 +1,12 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { createClientRequestId } from "@/lib/client-request-id";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Gender = "MALE" | "FEMALE";
 type Goal = "LOSE_WEIGHT" | "GAIN_WEIGHT" | "MAINTAIN_WEIGHT";
-type ActivityLevel =
-  | "SEDENTARY"
-  | "LIGHT"
-  | "MODERATE"
-  | "ACTIVE"
-  | "VERY_ACTIVE";
+type ActivityLevel = "SEDENTARY" | "LIGHT" | "MODERATE" | "ACTIVE" | "VERY_ACTIVE";
 
 type Profile = {
   gender: Gender | null;
@@ -37,14 +32,7 @@ type ApiEnvelope<T> = {
   error?: { code: string; message: string };
 };
 
-type StepKey =
-  | "gender"
-  | "goal"
-  | "age"
-  | "height"
-  | "weight"
-  | "target-weight"
-  | "activity";
+type StepKey = "gender" | "goal" | "age" | "height" | "weight" | "target-weight" | "activity";
 
 type Step = {
   key: StepKey;
@@ -64,39 +52,31 @@ const EMPTY_PROFILE: Profile = {
 };
 
 const STEPS: Step[] = [
-  { key: "gender", eyebrow: "基础信息", title: "你的生理性别是？", description: "用于估算基础代谢，仅参与本次演示算法。" },
-  { key: "goal", eyebrow: "你的方向", title: "这次最想实现什么？", description: "我们会据此调整热量建议与预测速度。" },
-  { key: "age", eyebrow: "基础信息", title: "你今年多大？", description: "支持 18–80 岁的成年人测评。" },
-  { key: "height", eyebrow: "身体数据", title: "你的身高是多少？", description: "请输入 120–230 cm 之间的数值。" },
-  { key: "weight", eyebrow: "身体数据", title: "你现在的体重是？", description: "请输入 35–300 kg 之间的数值。" },
-  { key: "target-weight", eyebrow: "目标设定", title: "你的目标体重是？", description: "请让目标体重与你选择的方向保持一致。" },
-  { key: "activity", eyebrow: "生活方式", title: "你平时的活动水平？", description: "选择最接近最近 4 周平均状态的一项。" },
+  { key: "gender", eyebrow: "关于你", title: "你的生理性别是？", description: "这能帮助我们更贴近你的身体状态。" },
+  { key: "goal", eyebrow: "你的方向", title: "这次最想实现什么？", description: "不用追求标准答案，选择此刻最重要的方向。" },
+  { key: "age", eyebrow: "关于你", title: "你今年多大？", description: "请输入 18–80 岁之间的年龄。" },
+  { key: "height", eyebrow: "身体状态", title: "你的身高是多少？", description: "填写最近一次测量的数据即可。" },
+  { key: "weight", eyebrow: "身体状态", title: "你现在的体重是？", description: "数字只是起点，我们更关注长期趋势。" },
+  { key: "target-weight", eyebrow: "你的目标", title: "你的目标体重是？", description: "设定一个让你感到踏实、愿意长期坚持的目标。" },
+  { key: "activity", eyebrow: "生活节奏", title: "你平时的活动水平？", description: "选择最接近最近四周平均状态的一项。" },
 ];
 
 const goalOptions: Array<{ value: Goal; label: string; detail: string }> = [
-  { value: "LOSE_WEIGHT", label: "健康减重", detail: "稳步降低体重与体脂" },
-  { value: "GAIN_WEIGHT", label: "科学增重", detail: "逐步增加体重与能量摄入" },
-  { value: "MAINTAIN_WEIGHT", label: "保持状态", detail: "维持当前体重与生活节奏" },
+  { value: "LOSE_WEIGHT", label: "健康减重", detail: "循序渐进，找回轻盈状态" },
+  { value: "GAIN_WEIGHT", label: "稳步增重", detail: "增加能量，建立更有力量的状态" },
+  { value: "MAINTAIN_WEIGHT", label: "保持状态", detail: "维持当下，优化生活节奏" },
 ];
 
 const activityOptions: Array<{ value: ActivityLevel; label: string; detail: string }> = [
-  { value: "SEDENTARY", label: "久坐", detail: "几乎不运动，以坐着为主" },
-  { value: "LIGHT", label: "轻度活动", detail: "每周运动 1–3 天" },
-  { value: "MODERATE", label: "中度活动", detail: "每周运动 3–5 天" },
-  { value: "ACTIVE", label: "高度活动", detail: "每周高强度运动 6–7 天" },
-  { value: "VERY_ACTIVE", label: "非常活跃", detail: "体力工作或每日高强度训练" },
+  { value: "SEDENTARY", label: "久坐为主", detail: "日常以坐着为主，很少主动运动" },
+  { value: "LIGHT", label: "轻度活动", detail: "每周轻松活动或运动 1–3 天" },
+  { value: "MODERATE", label: "中度活动", detail: "每周规律运动 3–5 天" },
+  { value: "ACTIVE", label: "高度活动", detail: "大多数日子都有较高强度运动" },
+  { value: "VERY_ACTIVE", label: "非常活跃", detail: "体力工作或几乎每天高强度训练" },
 ];
 
 function firstIncompleteStep(profile: Profile): number {
-  const values = [
-    profile.gender,
-    profile.goal,
-    profile.age,
-    profile.heightCm,
-    profile.weightKg,
-    profile.targetWeightKg,
-    profile.activityLevel,
-  ];
+  const values = [profile.gender, profile.goal, profile.age, profile.heightCm, profile.weightKg, profile.targetWeightKg, profile.activityLevel];
   const index = values.findIndex((value) => value === null);
   return index === -1 ? STEPS.length - 1 : index;
 }
@@ -104,36 +84,26 @@ function firstIncompleteStep(profile: Profile): number {
 function clientValidation(profile: Profile, stepIndex: number): string | null {
   switch (STEPS[stepIndex].key) {
     case "gender":
-      return profile.gender ? null : "请选择生理性别。";
+      return profile.gender ? null : "请选择你的生理性别。";
     case "goal":
-      return profile.goal ? null : "请选择本次测评目标。";
+      return profile.goal ? null : "请选择一个最重要的目标。";
     case "age":
-      return profile.age !== null && Number.isInteger(profile.age) && profile.age >= 18 && profile.age <= 80
-        ? null
-        : "年龄需要是 18–80 之间的整数。";
+      return profile.age !== null && Number.isInteger(profile.age) && profile.age >= 18 && profile.age <= 80 ? null : "请输入 18–80 之间的整数年龄。";
     case "height":
-      return profile.heightCm !== null && profile.heightCm >= 120 && profile.heightCm <= 230
-        ? null
-        : "身高需要在 120–230 cm 之间。";
+      return profile.heightCm !== null && profile.heightCm >= 120 && profile.heightCm <= 230 ? null : "请输入 120–230 cm 之间的身高。";
     case "weight":
-      return profile.weightKg !== null && profile.weightKg >= 35 && profile.weightKg <= 300
-        ? null
-        : "当前体重需要在 35–300 kg 之间。";
+      return profile.weightKg !== null && profile.weightKg >= 35 && profile.weightKg <= 300 ? null : "请输入 35–300 kg 之间的体重。";
     case "target-weight": {
       const { goal, weightKg, targetWeightKg } = profile;
-      if (targetWeightKg === null || targetWeightKg < 35 || targetWeightKg > 300) {
-        return "目标体重需要在 35–300 kg 之间。";
-      }
-      if (weightKg === null || goal === null) return "请先补全目标与当前体重。";
+      if (targetWeightKg === null || targetWeightKg < 35 || targetWeightKg > 300) return "请输入 35–300 kg 之间的目标体重。";
+      if (weightKg === null || goal === null) return "请先补全前面的信息。";
       if (goal === "LOSE_WEIGHT" && targetWeightKg >= weightKg) return "减重目标需要低于当前体重。";
       if (goal === "GAIN_WEIGHT" && targetWeightKg <= weightKg) return "增重目标需要高于当前体重。";
-      if (goal === "MAINTAIN_WEIGHT" && Math.abs(targetWeightKg - weightKg) > 2) {
-        return "保持体重时，目标与当前体重差值不能超过 2kg。";
-      }
+      if (goal === "MAINTAIN_WEIGHT" && Math.abs(targetWeightKg - weightKg) > 2) return "保持状态时，目标与当前体重建议相差不超过 2 kg。";
       return null;
     }
     case "activity":
-      return profile.activityLevel ? null : "请选择活动水平。";
+      return profile.activityLevel ? null : "请选择最接近你的活动水平。";
   }
 }
 
@@ -149,24 +119,40 @@ function payloadForStep(profile: Profile, stepKey: StepKey): Record<string, unkn
   }
 }
 
+function ArrowIcon({ back = false }: { back?: boolean }) {
+  return (
+    <svg viewBox="0 0 20 20" aria-hidden="true" className={`size-5 ${back ? "rotate-180" : ""}`}>
+      <path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg viewBox="0 0 20 20" aria-hidden="true" className="size-4">
+      <path d="m5 10 3 3 7-7" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+    </svg>
+  );
+}
+
 function OptionButton({ selected, label, detail, onClick }: { selected: boolean; label: string; detail: string; onClick: () => void }) {
   return (
     <button
       type="button"
       aria-pressed={selected}
       onClick={onClick}
-      className={`group flex w-full items-center justify-between rounded-2xl border p-4 text-left transition sm:p-5 ${
+      className={`group flex w-full items-center justify-between rounded-[1.35rem] border p-4 text-left transition duration-300 sm:p-5 ${
         selected
-          ? "border-[#19382e] bg-[#eef5da] shadow-[0_10px_24px_rgba(25,56,46,0.08)]"
-          : "border-[#dfe5df] bg-white hover:-translate-y-0.5 hover:border-[#9eada5]"
+          ? "border-[#10231d] bg-[#10231d] text-white shadow-[0_18px_45px_rgba(16,35,29,.16)]"
+          : "border-[#10231d]/10 bg-white/70 hover:-translate-y-1 hover:border-[#10231d]/25 hover:bg-white hover:shadow-[0_16px_40px_rgba(16,35,29,.08)]"
       }`}
     >
       <span>
-        <span className="block font-semibold text-[#19382e]">{label}</span>
-        <span className="mt-1 block text-sm text-[#6a7771]">{detail}</span>
+        <span className="block font-semibold tracking-[-0.02em]">{label}</span>
+        <span className={`mt-1.5 block text-sm leading-6 ${selected ? "text-white/48" : "text-[#6b7771]"}`}>{detail}</span>
       </span>
-      <span className={`ml-4 grid h-6 w-6 shrink-0 place-items-center rounded-full border ${selected ? "border-[#19382e] bg-[#19382e]" : "border-[#b8c3bd]"}`}>
-        {selected ? <span className="h-2 w-2 rounded-full bg-[#c8e76b]" /> : null}
+      <span className={`ml-4 grid size-8 shrink-0 place-items-center rounded-full border transition duration-300 ${selected ? "border-[#c8f25f] bg-[#c8f25f] text-[#10231d]" : "border-[#10231d]/15 text-transparent group-hover:border-[#10231d]/35"}`}>
+        <CheckIcon />
       </span>
     </button>
   );
@@ -178,12 +164,12 @@ export function AssessmentFunnel({ sessionId }: { sessionId: string }) {
   const [version, setVersion] = useState(0);
   const [stepIndex, setStepIndex] = useState(0);
   const [phase, setPhase] = useState<"loading" | "ready" | "saving" | "submitting" | "error">("loading");
-  const [message, setMessage] = useState("正在恢复你的进度…");
+  const [message, setMessage] = useState("正在回到上次的位置…");
 
   const restoreProgress = useCallback(async () => {
     const response = await fetch(`/api/sessions/${sessionId}/progress`, { cache: "no-store" });
     const payload = (await response.json()) as ApiEnvelope<Progress>;
-    if (!response.ok || !payload.data) throw new Error(payload.error?.message ?? "恢复进度失败");
+    if (!response.ok || !payload.data) throw new Error("暂时无法读取进度，请稍后再试。");
 
     if (payload.data.status === "COMPLETED") {
       router.replace(`/assessment/${sessionId}/result`);
@@ -195,15 +181,15 @@ export function AssessmentFunnel({ sessionId }: { sessionId: string }) {
     setVersion(payload.data.version);
     setStepIndex(firstIncompleteStep(restoredProfile));
     setPhase("ready");
-    setMessage(payload.data.version > 0 ? "已恢复上次保存的进度" : "每一步都会自动保存");
+    setMessage(payload.data.version > 0 ? "已恢复上次保存的进度" : "你的回答会自动保存");
   }, [router, sessionId]);
 
   useEffect(() => {
-    // Progress is loaded from an external API; state updates happen after the promise resolves.
+    // Progress is loaded after the external request completes.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    restoreProgress().catch((error: unknown) => {
+    restoreProgress().catch(() => {
       setPhase("error");
-      setMessage(error instanceof Error ? error.message : "恢复进度失败");
+      setMessage("暂时无法读取进度，请刷新后重试。");
     });
   }, [restoreProgress]);
 
@@ -218,7 +204,7 @@ export function AssessmentFunnel({ sessionId }: { sessionId: string }) {
 
   async function submitAssessment(nextVersion: number) {
     setPhase("submitting");
-    setMessage("正在生成你的专属报告…");
+    setMessage("正在整理你的专属报告…");
     const response = await fetch(`/api/sessions/${sessionId}/submit`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -228,10 +214,10 @@ export function AssessmentFunnel({ sessionId }: { sessionId: string }) {
 
     if (response.status === 409) {
       await restoreProgress();
-      setMessage("检测到其他页面更新，已恢复最新进度，请再次提交。");
+      setMessage("已同步最新进度，请再次生成报告。");
       return;
     }
-    if (!response.ok || !payload.data) throw new Error(payload.error?.message ?? "生成报告失败");
+    if (!response.ok || !payload.data) throw new Error("报告暂时没有生成成功，请再试一次。");
 
     router.push(`/assessment/${sessionId}/result`);
   }
@@ -244,7 +230,7 @@ export function AssessmentFunnel({ sessionId }: { sessionId: string }) {
     }
 
     setPhase("saving");
-    setMessage("正在安全保存…");
+    setMessage("正在保存…");
 
     try {
       const response = await fetch(`/api/sessions/${sessionId}/steps/${currentStep.key}`, {
@@ -260,10 +246,10 @@ export function AssessmentFunnel({ sessionId }: { sessionId: string }) {
 
       if (response.status === 409) {
         await restoreProgress();
-        setMessage("检测到其他页面更新，已恢复最新进度。");
+        setMessage("已为你同步最新进度。");
         return;
       }
-      if (!response.ok || !payload.data) throw new Error(payload.error?.message ?? "保存失败");
+      if (!response.ok || !payload.data) throw new Error("暂时没有保存成功，请再试一次。");
 
       setVersion(payload.data.version);
       if (stepIndex === STEPS.length - 1) {
@@ -275,67 +261,79 @@ export function AssessmentFunnel({ sessionId }: { sessionId: string }) {
       }
     } catch (error) {
       setPhase("error");
-      setMessage(error instanceof Error ? error.message : "保存失败，请重试");
+      setMessage(error instanceof Error ? error.message : "暂时没有保存成功，请再试一次。");
     }
   }
 
   if (phase === "loading") {
     return (
-      <main className="grid min-h-screen place-items-center bg-[#f4f1e9] px-5 text-[#19382e]">
+      <main className="surface-noise grid min-h-screen place-items-center bg-[#10231d] px-5 text-white">
         <div className="text-center">
-          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-[#dfe6dc] border-t-[#19382e]" />
-          <p className="mt-5 text-sm text-[#66736d]">{message}</p>
+          <div className="relative mx-auto size-16">
+            <span className="absolute inset-0 rounded-full border border-white/15" />
+            <span className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-[#c8f25f]" />
+            <span className="pulse-soft absolute inset-[38%] rounded-full bg-[#c8f25f]" />
+          </div>
+          <p className="mt-6 text-sm text-white/55">{message}</p>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#f4f1e9] px-4 py-5 text-[#19382e] sm:px-6 sm:py-10">
-      <div className="mx-auto max-w-5xl">
-        <header className="mb-5 flex items-center justify-between px-1 sm:mb-8">
-          <button type="button" onClick={() => router.push("/")} className="text-sm font-bold tracking-[-0.02em]">BETTER SELF LAB</button>
-          <span className="rounded-full bg-white/70 px-3 py-2 text-xs font-semibold text-[#6d7a74]">匿名测评 · 自动保存</span>
+    <main className="surface-noise min-h-screen bg-[#10231d] px-4 py-4 text-white sm:px-6 sm:py-6 lg:px-8">
+      <div className="mx-auto max-w-[1440px]">
+        <header className="flex items-center justify-between px-1 py-2 sm:px-2">
+          <button type="button" onClick={() => router.push("/")} className="text-sm font-semibold tracking-[-0.02em] text-white transition hover:text-[#c8f25f]">BETTER SELF</button>
+          <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-[11px] font-medium text-white/55 backdrop-blur">
+            <span className={`size-1.5 rounded-full ${phase === "error" ? "bg-[#ff795c]" : "bg-[#c8f25f]"}`} />
+            {phase === "saving" ? "正在保存" : phase === "submitting" ? "正在生成报告" : "私密填写 · 自动保存"}
+          </div>
         </header>
 
-        <div className="overflow-hidden rounded-[1.75rem] border border-black/5 bg-white shadow-[0_30px_80px_rgba(31,48,41,0.11)] sm:rounded-[2.25rem]">
-          <div className="h-2 bg-[#e9eee9]">
-            <div className="h-full rounded-r-full bg-[#c8e76b] transition-all duration-500" style={{ width: `${progress}%` }} />
+        <div className="mt-4 overflow-hidden rounded-[2rem] bg-[#f3f1eb] text-[#10231d] shadow-[0_30px_100px_rgba(0,0,0,.32)] sm:mt-6 lg:min-h-[calc(100vh-112px)] lg:rounded-[2.5rem]">
+          <div className="h-1.5 bg-[#dfe2dc]">
+            <div className="h-full rounded-r-full bg-[#c8f25f] transition-[width] duration-700 ease-out" style={{ width: `${progress}%` }} />
           </div>
 
-          <div className="grid lg:grid-cols-[260px_1fr]">
-            <aside className="hidden border-r border-[#edf0ed] bg-[#f8faf6] p-7 lg:block">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#89958f]">测评进度</p>
-              <ol className="mt-7 space-y-5">
-                {STEPS.map((step, index) => (
-                  <li key={step.key} className={`flex items-center gap-3 text-sm ${index === stepIndex ? "font-semibold text-[#19382e]" : index < stepIndex ? "text-[#527060]" : "text-[#9ba69f]"}`}>
-                    <span className={`grid h-7 w-7 place-items-center rounded-full text-xs ${index < stepIndex ? "bg-[#19382e] text-white" : index === stepIndex ? "bg-[#c8e76b] text-[#19382e]" : "bg-[#e8ece8]"}`}>
-                      {index < stepIndex ? "✓" : index + 1}
-                    </span>
-                    {step.eyebrow}
-                  </li>
-                ))}
-              </ol>
-              <div className="mt-10 rounded-2xl bg-white p-4 text-xs leading-5 text-[#728078]">
-                你的数据仅用于生成本次演示报告。本产品不提供医疗诊断。
+          <div className="grid lg:min-h-[calc(100vh-118px)] lg:grid-cols-[310px_1fr] xl:grid-cols-[350px_1fr]">
+            <aside className="relative hidden overflow-hidden bg-[#dfe9d8] p-8 lg:flex lg:flex-col xl:p-10">
+              <div className="absolute -bottom-32 -left-32 size-80 rounded-full border-[58px] border-[#10231d]" />
+              <div className="absolute bottom-20 left-20 size-20 rounded-full border-[16px] border-[#ff795c]" />
+              <div className="relative">
+                <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#68766f]">你的进度</p>
+                <p className="mt-5 text-5xl font-medium tracking-[-0.07em]">{String(stepIndex + 1).padStart(2, "0")}<span className="text-[#9aa69f]"> / 07</span></p>
+                <ol className="mt-10 space-y-1.5">
+                  {STEPS.map((step, index) => (
+                    <li key={step.key} className={`flex items-center gap-3 rounded-full px-3 py-2.5 text-sm transition duration-500 ${index === stepIndex ? "bg-[#10231d] font-semibold text-white" : index < stepIndex ? "text-[#40594f]" : "text-[#89958f]"}`}>
+                      <span className={`grid size-6 place-items-center rounded-full text-[10px] ${index < stepIndex ? "bg-[#c8f25f] text-[#10231d]" : index === stepIndex ? "bg-[#c8f25f] text-[#10231d]" : "border border-[#10231d]/10"}`}>
+                        {index < stepIndex ? <CheckIcon /> : index + 1}
+                      </span>
+                      {step.eyebrow}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+              <div className="relative mt-auto rounded-[1.5rem] bg-white/55 p-5 text-xs leading-6 text-[#64716b] backdrop-blur">
+                你的填写内容仅用于生成本次健康趋势参考。我们尊重并保护你的隐私。
               </div>
             </aside>
 
-            <section className="flex min-h-[620px] flex-col p-6 sm:p-10 lg:p-14">
-              <div className="flex items-center justify-between">
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#7b8982]">{currentStep.eyebrow}</p>
-                <p className="text-xs font-semibold text-[#89958f]">{stepIndex + 1} / {STEPS.length}</p>
+            <section className="flex min-h-[680px] flex-col p-5 sm:p-9 lg:min-h-0 lg:p-12 xl:p-16">
+              <div className="flex items-center justify-between border-b border-[#10231d]/10 pb-5">
+                <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#6c7972]">{currentStep.eyebrow}</p>
+                <p className="text-xs font-semibold text-[#7b8781]">{Math.round(progress)}%</p>
               </div>
 
-              <div className="mt-8 max-w-2xl sm:mt-12">
-                <h1 className="text-3xl font-semibold tracking-[-0.045em] sm:text-5xl">{currentStep.title}</h1>
-                <p className="mt-4 leading-7 text-[#66736d]">{currentStep.description}</p>
+              <div key={currentStep.key} className="step-enter mt-9 max-w-3xl sm:mt-12">
+                <h1 className="text-balance text-4xl font-medium leading-[1.03] tracking-[-0.06em] sm:text-6xl">{currentStep.title}</h1>
+                <p className="mt-4 max-w-xl text-sm leading-7 text-[#68756f] sm:text-base">{currentStep.description}</p>
 
                 <div className="mt-8 sm:mt-10">
                   {currentStep.key === "gender" ? (
                     <div className="grid gap-3 sm:grid-cols-2">
-                      <OptionButton selected={profile.gender === "FEMALE"} label="女性" detail="按女性代谢公式估算" onClick={() => setProfile((p) => ({ ...p, gender: "FEMALE" }))} />
-                      <OptionButton selected={profile.gender === "MALE"} label="男性" detail="按男性代谢公式估算" onClick={() => setProfile((p) => ({ ...p, gender: "MALE" }))} />
+                      <OptionButton selected={profile.gender === "FEMALE"} label="女性" detail="帮助我们更贴近你的身体状态" onClick={() => setProfile((p) => ({ ...p, gender: "FEMALE" }))} />
+                      <OptionButton selected={profile.gender === "MALE"} label="男性" detail="帮助我们更贴近你的身体状态" onClick={() => setProfile((p) => ({ ...p, gender: "MALE" }))} />
                     </div>
                   ) : null}
 
@@ -345,13 +343,13 @@ export function AssessmentFunnel({ sessionId }: { sessionId: string }) {
                     </div>
                   ) : null}
 
-                  {currentStep.key === "age" ? <NumberField value={profile.age} onChange={(value) => setNumeric("age", value)} min={18} max={80} step={1} unit="岁" placeholder="例如 28" /> : null}
-                  {currentStep.key === "height" ? <NumberField value={profile.heightCm} onChange={(value) => setNumeric("heightCm", value)} min={120} max={230} step={0.1} unit="cm" placeholder="例如 168" /> : null}
-                  {currentStep.key === "weight" ? <NumberField value={profile.weightKg} onChange={(value) => setNumeric("weightKg", value)} min={35} max={300} step={0.1} unit="kg" placeholder="例如 65" /> : null}
+                  {currentStep.key === "age" ? <NumberField value={profile.age} onChange={(value) => setNumeric("age", value)} min={18} max={80} step={1} unit="岁" placeholder="28" /> : null}
+                  {currentStep.key === "height" ? <NumberField value={profile.heightCm} onChange={(value) => setNumeric("heightCm", value)} min={120} max={230} step={0.1} unit="cm" placeholder="168" /> : null}
+                  {currentStep.key === "weight" ? <NumberField value={profile.weightKg} onChange={(value) => setNumeric("weightKg", value)} min={35} max={300} step={0.1} unit="kg" placeholder="65" /> : null}
                   {currentStep.key === "target-weight" ? (
                     <div>
-                      <NumberField value={profile.targetWeightKg} onChange={(value) => setNumeric("targetWeightKg", value)} min={35} max={300} step={0.1} unit="kg" placeholder="例如 58" />
-                      {profile.weightKg !== null ? <p className="mt-3 text-sm text-[#77847d]">当前体重：{profile.weightKg} kg</p> : null}
+                      <NumberField value={profile.targetWeightKg} onChange={(value) => setNumeric("targetWeightKg", value)} min={35} max={300} step={0.1} unit="kg" placeholder="58" />
+                      {profile.weightKg !== null ? <p className="mt-4 text-sm text-[#76827c]">当前体重 {profile.weightKg} kg</p> : null}
                     </div>
                   ) : null}
 
@@ -363,13 +361,29 @@ export function AssessmentFunnel({ sessionId }: { sessionId: string }) {
                 </div>
               </div>
 
-              <div className="mt-auto flex flex-col-reverse gap-4 pt-10 sm:flex-row sm:items-center sm:justify-between">
-                <button type="button" disabled={stepIndex === 0 || phase === "saving" || phase === "submitting"} onClick={() => { setStepIndex((current) => Math.max(0, current - 1)); setPhase("ready"); setMessage("你可以修改已保存的答案"); }} className="rounded-full px-5 py-3 text-sm font-semibold text-[#5e6d65] hover:bg-[#f2f5f1] disabled:invisible">← 上一步</button>
+              <div className="mt-auto flex flex-col-reverse gap-5 pt-10 sm:flex-row sm:items-end sm:justify-between">
+                <button
+                  type="button"
+                  disabled={stepIndex === 0 || phase === "saving" || phase === "submitting"}
+                  onClick={() => { setStepIndex((current) => Math.max(0, current - 1)); setPhase("ready"); setMessage("你可以修改之前的回答"); }}
+                  className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-[#5e6d65] transition hover:bg-white disabled:invisible"
+                >
+                  <ArrowIcon back />
+                  上一步
+                </button>
                 <div className="flex flex-col items-stretch gap-3 sm:items-end">
-                  <button type="button" onClick={saveAndContinue} disabled={phase === "saving" || phase === "submitting"} className="min-w-44 rounded-2xl bg-[#19382e] px-7 py-4 font-semibold text-white shadow-[0_14px_30px_rgba(25,56,46,0.2)] transition hover:-translate-y-0.5 hover:bg-[#244c3f] disabled:cursor-wait disabled:opacity-70">
-                    {phase === "saving" ? "正在保存…" : phase === "submitting" ? "正在生成报告…" : stepIndex === STEPS.length - 1 ? "生成我的报告" : "保存并继续 →"}
+                  <button
+                    type="button"
+                    onClick={saveAndContinue}
+                    disabled={phase === "saving" || phase === "submitting"}
+                    className="group inline-flex min-w-52 items-center justify-between gap-6 rounded-full bg-[#10231d] px-6 py-4 font-semibold text-white shadow-[0_16px_40px_rgba(16,35,29,.18)] transition duration-300 hover:-translate-y-1 hover:bg-[#1b4235] disabled:cursor-wait disabled:translate-y-0 disabled:opacity-70"
+                  >
+                    {phase === "saving" ? "正在保存…" : phase === "submitting" ? "正在生成报告…" : stepIndex === STEPS.length - 1 ? "生成我的报告" : "保存并继续"}
+                    <span className="grid size-8 place-items-center rounded-full bg-[#c8f25f] text-[#10231d] transition duration-300 group-hover:translate-x-1">
+                      {phase === "saving" || phase === "submitting" ? <span className="size-3 animate-spin rounded-full border-2 border-[#10231d]/25 border-t-[#10231d]" /> : <ArrowIcon />}
+                    </span>
                   </button>
-                  <p role={phase === "error" ? "alert" : "status"} className={`text-center text-xs sm:text-right ${phase === "error" ? "text-red-700" : "text-[#7a8780]"}`}>{message}</p>
+                  <p role={phase === "error" ? "alert" : "status"} className={`min-h-4 text-center text-xs sm:text-right ${phase === "error" ? "text-[#c84c36]" : "text-[#7a8780]"}`}>{message}</p>
                 </div>
               </div>
             </section>
@@ -382,8 +396,8 @@ export function AssessmentFunnel({ sessionId }: { sessionId: string }) {
 
 function NumberField({ value, onChange, min, max, step, unit, placeholder }: { value: number | null; onChange: (value: string) => void; min: number; max: number; step: number; unit: string; placeholder: string }) {
   return (
-    <label className="block max-w-md">
-      <span className="flex items-center rounded-2xl border border-[#dbe2dc] bg-[#fbfcfa] px-5 py-2 focus-within:border-[#19382e] focus-within:ring-4 focus-within:ring-[#c8e76b]/30">
+    <label className="block max-w-xl">
+      <span className="flex items-end border-b-2 border-[#10231d]/18 pb-3 transition duration-300 focus-within:border-[#10231d]">
         <input
           autoFocus
           type="number"
@@ -394,10 +408,11 @@ function NumberField({ value, onChange, min, max, step, unit, placeholder }: { v
           max={max}
           step={step}
           placeholder={placeholder}
-          className="min-w-0 flex-1 bg-transparent py-4 text-3xl font-semibold tracking-[-0.03em] outline-none placeholder:text-[#c1c9c4]"
+          className="min-w-0 flex-1 bg-transparent py-2 text-6xl font-medium tracking-[-0.075em] outline-none placeholder:text-[#c3c9c4] sm:text-8xl"
         />
-        <span className="ml-3 text-sm font-semibold text-[#718078]">{unit}</span>
+        <span className="mb-3 ml-4 text-base font-semibold text-[#6f7b75] sm:mb-5">{unit}</span>
       </span>
+      <span className="mt-4 block text-xs text-[#85908a]">请输入数字</span>
     </label>
   );
 }

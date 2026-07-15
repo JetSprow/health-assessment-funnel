@@ -55,10 +55,11 @@ Deliver a publicly verifiable full-stack application within the three-day challe
 
 ### M5: Product UI — complete
 
-- Mobile-first landing page and seven-step one-question Funnel.
-- Progress, save feedback, back editing, error retries and disabled/loading states.
-- Locked report, full report, SVG projection and Mock-payment CTA.
-- Explicit non-medical disclaimer.
+- Completed a customer-facing redesign across the landing page, assessment intro, seven-step journey, summary and full report.
+- Established a premium athletic brand language with deep forest, warm stone, energy lime and a restrained coral accent.
+- Unified page entrances, step transitions, orbit graphics and SVG chart motion, with `prefers-reduced-motion` support.
+- Removed development, architecture, API, database, algorithm-version, testing and payment-implementation language from customer-visible UI.
+- Preserved progress, autosave, back editing, retries, locked/full reports and the explicit non-medical disclaimer.
 
 ### M6: Quality and delivery — complete
 

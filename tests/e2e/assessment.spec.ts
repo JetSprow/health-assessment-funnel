@@ -51,14 +51,14 @@ test("restores progress and preserves full access after mock payment", async ({ 
   await expect(page).toHaveURL(/\/result$/);
 
   await expect(page.getByText("基础报告", { exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: /模拟支付并解锁/ })).toBeVisible();
-  await page.getByRole("button", { name: /模拟支付并解锁/ }).click();
+  await expect(page.getByRole("button", { name: /免费解锁完整报告/ })).toBeVisible();
+  await page.getByRole("button", { name: /免费解锁完整报告/ }).click();
 
   await expect(page.getByText("逐周体重趋势")).toBeVisible();
-  await expect(page.getByText("会员报告 · 已解锁")).toBeVisible();
+  await expect(page.getByText("完整报告 · 已解锁")).toBeVisible();
   await page.reload();
   await expect(page.getByText("逐周体重趋势")).toBeVisible();
-  await expect(page.getByText("会员报告 · 已解锁")).toBeVisible();
+  await expect(page.getByText("完整报告 · 已解锁")).toBeVisible();
   expect(browserErrors).toEqual([]);
 });
 

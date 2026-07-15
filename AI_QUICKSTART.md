@@ -23,6 +23,7 @@ This is the repository entry point for AI coding agents. 本文件是 AI Coding 
 - Do not hand-edit `src/generated/prisma/`. / 不得手改 Prisma 生成文件。
 - Never commit secrets, server passwords or real health data. / 禁止提交 Secret、服务器密码或真实健康数据。
 - Update both `docs/en/` and `docs/zh-CN/`. / 文档变更必须同步中英文。
+- Customer-visible UI is written only for customers; never expose implementation language. Keep the premium athletic `BETTER SELF` design coherent. / 客户可见界面只面向客户，不展示实现类文案，并保持 `BETTER SELF` 的高级运动视觉一致。
 
 ## Quality gate / 质量门禁
 

@@ -8,6 +8,14 @@ type CreateSessionResponse = {
   error?: { message: string };
 };
 
+function ArrowIcon() {
+  return (
+    <svg viewBox="0 0 20 20" aria-hidden="true" className="size-5">
+      <path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
+    </svg>
+  );
+}
+
 export function AssessmentStarter() {
   const router = useRouter();
   const [isStarting, setIsStarting] = useState(false);
@@ -22,33 +30,32 @@ export function AssessmentStarter() {
       const payload = (await response.json()) as CreateSessionResponse;
 
       if (!response.ok || !payload.data) {
-        throw new Error(payload.error?.message ?? "创建会话失败");
+        throw new Error("暂时无法开始，请稍后再试。");
       }
 
       router.push(`/assessment/${payload.data.sessionId}`);
-    } catch (caughtError) {
-      setError(caughtError instanceof Error ? caughtError.message : "创建会话失败");
+    } catch {
+      setError("暂时无法开始，请检查网络后重试。");
       setIsStarting(false);
     }
   }
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div>
       <button
         type="button"
         onClick={startAssessment}
         disabled={isStarting}
-        className="w-full rounded-2xl bg-[#19382e] px-6 py-4 text-base font-semibold text-white shadow-[0_14px_30px_rgba(25,56,46,0.22)] transition hover:-translate-y-0.5 hover:bg-[#244c3f] disabled:cursor-wait disabled:opacity-70 sm:w-auto sm:min-w-52"
+        className="group inline-flex w-full items-center justify-between gap-8 rounded-full bg-[#c8f25f] px-6 py-4 font-semibold text-[#10231d] shadow-[0_18px_45px_rgba(200,242,95,.15)] transition duration-300 hover:-translate-y-1 hover:bg-[#d8ff75] disabled:cursor-wait disabled:translate-y-0 disabled:opacity-70 sm:w-auto sm:min-w-60"
       >
-        {isStarting ? "正在创建测评…" : "开始我的测评"}
+        {isStarting ? "正在为你准备…" : "开始我的测评"}
+        <span className="grid size-8 place-items-center rounded-full bg-[#10231d] text-[#c8f25f] transition duration-300 group-hover:translate-x-1">
+          {isStarting ? <span className="size-3 animate-spin rounded-full border-2 border-[#c8f25f]/35 border-t-[#c8f25f]" /> : <ArrowIcon />}
+        </span>
       </button>
-      {error ? (
-        <p role="alert" className="max-w-md text-center text-sm text-red-700">
-          {error}
-        </p>
-      ) : (
-        <p className="text-center text-sm text-[#66736d]">约 3 分钟，可随时中断并恢复</p>
-      )}
+      <p role={error ? "alert" : "status"} className={`mt-4 text-sm ${error ? "text-[#ff9a83]" : "text-white/45"}`}>
+        {error ?? "约 3 分钟 · 可随时离开并继续"}
+      </p>
     </div>
   );
 }

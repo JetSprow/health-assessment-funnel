@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/JetSprow/health-assessment-funnel/actions/workflows/ci.yml/badge.svg)](https://github.com/JetSprow/health-assessment-funnel/actions/workflows/ci.yml)
 
-A full-stack health-assessment funnel built for a three-day engineering challenge. Anonymous users complete a seven-step questionnaire, resume interrupted progress, receive a server-generated assessment, see a redacted result before payment, and unlock the complete report through an idempotent Mock payment flow.
+A production-shaped health-assessment experience with a complete engineering foundation. Customers complete a seven-step questionnaire, resume interrupted progress, receive a personalized status reference and unlock a complete trend report. The customer interface uses premium, minimal athletic styling and never exposes development or implementation language.
 
 > The calculation rules are for technical demonstration and general wellness education only. They are not medical advice or diagnosis.
 
@@ -35,6 +35,14 @@ Because the application enforces Session ownership, a `sessionId` alone cannot r
 6. Return an explicit locked DTO to unpaid users without protected values.
 7. Activate an idempotent Mock subscription through `POST /api/pay` or `POST /pay`.
 8. Return the complete persisted report after payment and preserve access after refresh.
+
+## Customer experience design
+
+- **Elegant athletic direction:** deep forest, warm stone and energy lime create a restrained but active visual system.
+- **Premium minimalism:** editorial-scale typography, generous spacing and clear hierarchy keep attention on the customer’s own status.
+- **Fluid motion:** page entrances, step transitions, orbit graphics and charts share a consistent easing curve and respect `prefers-reduced-motion`.
+- **Customer-first language:** landing, questionnaire, loading, error, locked and full-report states never expose APIs, databases, algorithm versions, tests or payment implementation details.
+- **Journey-wide consistency:** the landing page, assessment intro, seven-step funnel, summary and full report share one responsive design language.
 
 ## Technology
 

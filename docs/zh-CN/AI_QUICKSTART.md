@@ -115,6 +115,14 @@ docs/zh-CN/                      简体中文文档
 - 支付事件创建与订阅激活必须保留在同一事务中。
 - Mock 支付不得被描述为真实扣费。
 
+### 客户界面与文案
+
+- 客户是所有页面文案的唯一读者，不得在可见 UI 中出现开发、架构、API、数据库、算法版本、自动化测试、幂等、Session 或模拟支付等实现语言。
+- 品牌显示名使用 `BETTER SELF`；视觉基调为优雅运动感、高级、简约和克制。
+- 复用 `src/app/globals.css` 中的设计 Token 与动效类，保持首页、测评和报告一致。
+- 新动效必须流畅且兼容 `prefers-reduced-motion`，不能影响键盘焦点、可读性或移动端操作。
+- 修改客户文案或交互后，同步更新 `tests/e2e/assessment.spec.ts` 的可访问名称断言。
+
 ### 数据库与部署
 
 - 生产数据库变更必须通过 Migration。
@@ -178,7 +186,7 @@ PLAYWRIGHT_BASE_URL=http://82.22.31.80 npm run test:e2e
 | 修改保存语义 | 步骤路由、`StepEvent`、Session version | 重放/并发测试和真实数据库 E2E |
 | 修改支付语义 | 支付路由、`PaymentEvent`、`Subscription` | 支付幂等测试和 E2E |
 | 修改数据库结构 | `prisma/schema.prisma`、新 Migration | `db:validate`、测试、Build |
-| 修改 UI 流程 | Funnel/Result 组件 | 移动端 Playwright |
+| 修改客户 UI | `src/app/page.tsx`、测评/报告组件、`globals.css` | 桌面与移动端视觉检查、Playwright、文案扫描 |
 | 修改部署 | Dockerfile、Compose、Nginx、脚本 | Build、健康探针、部署手册 |
 | 修改公开 API | Route Handler 与双语 API 文档 | 契约测试与双语文档同步 |
 

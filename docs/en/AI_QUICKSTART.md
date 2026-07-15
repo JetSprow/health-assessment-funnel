@@ -115,6 +115,14 @@ docs/zh-CN/                      Simplified Chinese documentation
 - Payment creation and subscription activation must stay transactional.
 - Mock payment must never be presented as real billing.
 
+### Customer UI and copy
+
+- The customer is the only audience for visible page copy. Never expose development, architecture, API, database, algorithm-version, automated-testing, idempotency, Session or simulated-payment language in the UI.
+- Use `BETTER SELF` as the visible brand name; keep the direction elegant, athletic, premium, minimal and restrained.
+- Reuse the design tokens and motion utilities in `src/app/globals.css` so landing, assessment and report pages stay coherent.
+- New motion must remain fluid, respect `prefers-reduced-motion`, and preserve keyboard focus, readability and mobile usability.
+- When customer copy or interaction names change, update accessible-name assertions in `tests/e2e/assessment.spec.ts`.
+
 ### Database and deployment
 
 - Use migrations for production changes.
@@ -178,7 +186,7 @@ Replay the acceptance flow with cURL:
 | Change save semantics | step Route Handler, `StepEvent`, Session version | Replay/concurrency tests and real-DB E2E |
 | Change payment semantics | pay Route Handler, `PaymentEvent`, `Subscription` | Payment idempotency tests and E2E |
 | Change database shape | `prisma/schema.prisma`, new migration | `db:validate`, tests, build |
-| Change UI journey | Funnel/result components | Mobile Playwright |
+| Change customer UI | `src/app/page.tsx`, assessment/report components, `globals.css` | Desktop/mobile visual review, Playwright, copy scan |
 | Change deployment | Dockerfile, Compose, Nginx, scripts | Build, health probe, deployment runbook |
 | Change public API | Route Handler and `docs/*/API.md` | Contract tests and both language docs |
 

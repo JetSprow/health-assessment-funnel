@@ -6,7 +6,7 @@
 
 ## 中文
 
-这是一个面向全栈工程挑战的健康测评 Funnel。匿名用户可以完成七步问卷、中断后恢复进度、获取服务端计算结果，并在 Mock 支付后解锁完整报告。
+这是一个具备完整工程闭环的健康测评体验。客户可以完成七步问卷、中断后恢复进度、获取个性化状态参考，并解锁完整趋势报告。前端采用优雅运动感的高级简约视觉系统，客户界面不展示开发或实现细节。
 
 核心能力：
 
@@ -16,6 +16,7 @@
 - 服务端 BMI、热量、目标日期和趋势计算
 - 未付费脱敏 DTO 与付费完整 DTO
 - Vitest、真实 PostgreSQL API 测试和 Playwright 移动端 E2E
+- 优雅运动感、丝滑动效与移动端优先的客户体验
 - Docker Compose、Nginx 和 GitHub Actions
 
 快速启动：
@@ -32,7 +33,7 @@ npm run dev
 
 ## English
 
-This repository implements a production-shaped health-assessment funnel for a full-stack engineering challenge. Anonymous users can complete seven steps, restore interrupted progress, receive a server-side assessment, and unlock the full result through a Mock payment flow.
+This repository implements a production-shaped health-assessment experience. Customers can complete seven steps, restore interrupted progress, receive a personalized status reference, and unlock a complete trend report. The customer UI uses a premium, minimal athletic visual system and never exposes implementation-oriented copy.
 
 Core capabilities:
 
@@ -42,6 +43,7 @@ Core capabilities:
 - Server-side BMI, calorie, target-date and projection calculations
 - Explicit locked and full result DTOs
 - Vitest, real-PostgreSQL API checks and mobile Playwright E2E
+- Premium athletic styling, fluid motion and a mobile-first customer experience
 - Docker Compose, Nginx and GitHub Actions
 
 Quick start:
