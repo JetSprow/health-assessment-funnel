@@ -1,5 +1,15 @@
 # Dedicated Server Deployment
 
+## Current demo deployment
+
+- Public URL: <http://82.22.31.80>
+- Health probe: <http://82.22.31.80/api/health>
+- Initial deployment date: 2026-07-15
+- Source branch: `main` pulled from GitHub
+- Transport: temporary HTTP/IP mode with `COOKIE_SECURE=false`
+
+Do not submit real health information to this demo until a domain, trusted TLS certificate and the production privacy/compliance controls are in place.
+
 ## Topology
 
 Docker Compose starts four services:
@@ -67,6 +77,24 @@ Verify:
 curl --fail http://127.0.0.1/api/health
 docker compose --env-file .env.production logs --tail=100 app nginx migrate db
 ```
+
+## Host firewall
+
+The current dedicated server allows only both verified SSH ports and the web ports. Application port 3000 and PostgreSQL port 5432 are not bound on the host.
+
+```bash
+apt-get install -y ufw
+ufw default deny incoming
+ufw default allow outgoing
+ufw allow 22/tcp
+ufw allow 782/tcp
+ufw allow 80/tcp
+ufw allow 443/tcp
+ufw --force enable
+ufw status verbose
+```
+
+Verify key-based SSH access on both configured SSH ports before enabling the firewall.
 
 ## Updating
 

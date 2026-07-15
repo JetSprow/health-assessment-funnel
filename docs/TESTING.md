@@ -27,6 +27,7 @@ npm audit --audit-level=high
 - Incomplete submit rejection.
 - Locked DTO protected-field leakage prevention.
 - Payment idempotency and LOCKED-to-FULL transition.
+- Client request-ID generation with and without native `crypto.randomUUID()`.
 
 ## Playwright journey
 
@@ -40,6 +41,10 @@ The mobile Chromium test performs:
 6. Mock payment and full report assertion.
 7. Refresh and persistent full access assertion.
 8. Browser console and page error assertion.
+
+## Production release verification
+
+The same mobile Chromium journey is also run against the deployed HTTP/IP environment without starting a local web server. This caught the secure-context limitation of native `crypto.randomUUID()` and now verifies the complete deployed create/save/restore/submit/pay/refresh path.
 
 ## CI
 
