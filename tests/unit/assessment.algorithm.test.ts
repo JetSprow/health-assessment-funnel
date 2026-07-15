@@ -48,12 +48,22 @@ describe("calculateAssessment", () => {
     ).toThrow(ZodError);
   });
 
-  it("rejects missing and non-finite numeric values", () => {
+  it.each([
+    ["missing age", { ...validInput, age: undefined }],
+    ["missing height", { ...validInput, heightCm: undefined }],
+    ["missing weight", { ...validInput, weightKg: undefined }],
+    ["age below minimum", { ...validInput, age: 17 }],
+    ["age above maximum", { ...validInput, age: 81 }],
+    ["fractional age", { ...validInput, age: 30.5 }],
+    ["height below minimum", { ...validInput, heightCm: 119.9 }],
+    ["height above maximum", { ...validInput, heightCm: 230.1 }],
+    ["weight below minimum", { ...validInput, weightKg: 34.9 }],
+    ["weight above maximum", { ...validInput, weightKg: 300.1 }],
+    ["NaN weight", { ...validInput, weightKg: Number.NaN }],
+    ["infinite age", { ...validInput, age: Number.POSITIVE_INFINITY }],
+  ])("rejects %s", (_caseName, input) => {
     expect(() =>
-      calculateAssessment({ ...validInput, weightKg: Number.NaN }, fixedNow),
-    ).toThrow(ZodError);
-    expect(() =>
-      calculateAssessment({ ...validInput, age: Number.POSITIVE_INFINITY }, fixedNow),
+      calculateAssessment(input as AssessmentInput, fixedNow),
     ).toThrow(ZodError);
   });
 

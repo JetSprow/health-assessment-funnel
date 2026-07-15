@@ -38,3 +38,17 @@ AI-generated implementation still requires human review for privacy law, medical
 ## Estimated impact
 
 The largest productivity gain came from maintaining a short feedback loop across product, API, database and browser layers. The most important quality gain came from using AI to enumerate failure modes, then proving them with automated tests instead of accepting generated code at face value.
+
+## Challenge-requested examples
+
+### Database modeling and Mock data
+
+AI was used to enumerate candidate entities and failure modes, then the final model was narrowed to `User`, `AssessmentSession`, `AssessmentProfile`, `AssessmentResult`, `Subscription`, `PaymentEvent` and `StepEvent`. Mock data was generated for realistic weight-loss, weight-gain, maintain-weight, boundary and payment scenarios. The generated values were accepted only when they passed the same Zod rules used by the API.
+
+### Complex logic and boundary test generation
+
+AI helped enumerate the health-calculation branches, projection caps, goal/target direction conflicts, missing numeric fields, non-finite values, duplicate requests, conflicting idempotency keys, stale versions and concurrent writes. Those scenarios were converted into deterministic Vitest cases and real-PostgreSQL Playwright API checks.
+
+### One proposal/test I explicitly rejected
+
+Yes. An AI-generated leakage test initially failed merely because the locked response listed the names of locked sections such as `projectionCurve`. That assertion was wrong: naming a locked section is not the same as returning its protected value. I rejected that test because it confused UI metadata with data disclosure. The replacement test checks the response object keys and sentinel protected values separately, so it fails only if private result data is actually serialized.

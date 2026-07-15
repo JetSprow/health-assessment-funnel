@@ -44,7 +44,13 @@ The mobile Chromium test performs:
 
 ## Production release verification
 
-The same mobile Chromium journey is also run against the deployed HTTP/IP environment without starting a local web server. This caught the secure-context limitation of native `crypto.randomUUID()` and now verifies the complete deployed create/save/restore/submit/pay/refresh path.
+The same mobile Chromium journey and the real-PostgreSQL API concurrency test can run against the deployed environment without starting a local web server:
+
+```bash
+PLAYWRIGHT_BASE_URL=http://82.22.31.80 npm run test:e2e
+```
+
+This production run caught the secure-context limitation of native `crypto.randomUUID()` and verifies the complete deployed create/save/restore/submit/pay/refresh path plus replay, out-of-order and concurrent version handling.
 
 ## CI
 

@@ -61,3 +61,85 @@ test("restores progress and preserves full access after mock payment", async ({ 
   await expect(page.getByText("会员报告 · 已解锁")).toBeVisible();
   expect(browserErrors).toEqual([]);
 });
+
+test("real PostgreSQL API handles replay, out-of-order saves, recovery and concurrent versions", async ({ request }) => {
+  const created = await request.post("/api/sessions");
+  expect(created.status()).toBe(201);
+  const createdBody = await created.json();
+  const sessionId = createdBody.data.sessionId as string;
+
+  const saveStep = (
+    stepKey: string,
+    requestId: string,
+    version: number,
+    data: Record<string, unknown>,
+  ) =>
+    request.patch(`/api/sessions/${sessionId}/steps/${stepKey}`, {
+      data: { requestId, version, data },
+    });
+
+  const outOfOrder = await saveStep(
+    "activity",
+    "e2e-activity-replay-001",
+    0,
+    { activityLevel: "ACTIVE" },
+  );
+  expect(outOfOrder.status()).toBe(200);
+  expect((await outOfOrder.json()).data).toMatchObject({
+    currentStep: 7,
+    version: 1,
+    duplicated: false,
+  });
+
+  const replay = await saveStep(
+    "activity",
+    "e2e-activity-replay-001",
+    0,
+    { activityLevel: "ACTIVE" },
+  );
+  expect(replay.status()).toBe(200);
+  expect((await replay.json()).data).toMatchObject({
+    version: 1,
+    duplicated: true,
+  });
+
+  const conflictingReplay = await saveStep(
+    "activity",
+    "e2e-activity-replay-001",
+    1,
+    { activityLevel: "LIGHT" },
+  );
+  expect(conflictingReplay.status()).toBe(409);
+  expect((await conflictingReplay.json()).error.code).toBe(
+    "IDEMPOTENCY_CONFLICT",
+  );
+
+  const concurrentResponses = await Promise.all([
+    saveStep("gender", "e2e-concurrent-gender-001", 1, {
+      gender: "FEMALE",
+    }),
+    saveStep("goal", "e2e-concurrent-goal-001", 1, {
+      goal: "LOSE_WEIGHT",
+    }),
+  ]);
+  expect(concurrentResponses.map((response) => response.status()).sort()).toEqual([
+    200,
+    409,
+  ]);
+
+  const recovered = await request.get(
+    `/api/sessions/${sessionId}/progress`,
+  );
+  expect(recovered.status()).toBe(200);
+  const recoveredBody = await recovered.json();
+  expect(recoveredBody.data).toMatchObject({
+    currentStep: 7,
+    version: 2,
+    profile: { activityLevel: "ACTIVE" },
+  });
+  expect(
+    [recoveredBody.data.profile.gender, recoveredBody.data.profile.goal].filter(
+      Boolean,
+    ),
+  ).toHaveLength(1);
+});

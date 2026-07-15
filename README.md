@@ -1,5 +1,7 @@
 # Health Assessment Funnel
 
+[![CI](https://github.com/JetSprow/health-assessment-funnel/actions/workflows/ci.yml/badge.svg)](https://github.com/JetSprow/health-assessment-funnel/actions/workflows/ci.yml)
+
 一个面向全栈工程挑战的健康测评 Funnel：匿名用户完成七步问卷，进度可中断恢复，由服务端生成评估结果；未订阅用户只能看到脱敏摘要，完成 Mock 支付后可查看完整趋势报告。
 
 > 本项目中的计算规则仅用于技术演示和一般健康教育，不构成医疗建议或诊断。
@@ -7,10 +9,34 @@
 ## 在线演示
 
 - 地址：<http://82.22.31.80>
+- GitHub：<https://github.com/JetSprow/health-assessment-funnel>
 - 首次部署：2026-07-15
 - 状态探针：<http://82.22.31.80/api/health>
 
 当前演示通过服务器 IP 和 HTTP 提供。它适合功能验收，不适合承载真实健康数据；配置域名与 HTTPS 后，应将 `COOKIE_SECURE` 切换为 `true`。
+
+### 验收快速入口
+
+- 一键重放未付费 → `/pay` → 完整结果：`./scripts/demo-flow.sh`
+- 已支付测试 `sessionId`：`64c41d64-1b86-4be9-b3be-f42a9b456dac`
+- 固定测试 Cookie、直接读取命令和预期响应：[Demo and Replay Guide](docs/DEMO.md)
+
+本实现会验证匿名用户对 Session 的归属，因此固定 `sessionId` 必须与文档中的专用演示 Cookie 配合使用。该凭证只对应虚构测试数据，并被有意公开用于验收。
+
+可直接重放已支付 Session 的 `/pay` 幂等调用：
+
+```bash
+SESSION_ID='64c41d64-1b86-4be9-b3be-f42a9b456dac'
+DEMO_COOKIE='health_assessment_session=a6a1178c-4eaa-460f-8223-3fb9a7ff4154.ctKrNuC4Bwtm-SFFiOivPz-0rMbTlzA4pCUhTWoioBA'
+
+curl --fail-with-body --silent --show-error \
+  -H "Cookie: $DEMO_COOKIE" \
+  -H 'Content-Type: application/json' \
+  -X POST http://82.22.31.80/pay \
+  --data "{\"sessionId\":\"$SESSION_ID\",\"idempotencyKey\":\"public-paid-demo-20260715\"}"
+```
+
+若要观察同一个新 Session 从 `LOCKED` 变为 `FULL`，运行 `./scripts/demo-flow.sh`。
 
 ## 已完成的用户闭环
 
@@ -197,18 +223,30 @@ erDiagram
 
 ## 测试覆盖
 
-当前有 21 个 Vitest 测试和 1 个 Playwright 端到端测试，覆盖：
+自动化测试覆盖：
 
-- 算法正常路径、维持体重、零身高、NaN/Infinity、目标方向冲突、超长预测封顶。
+- 算法正常路径、维持体重、缺失字段、年龄/身高/体重上下界、NaN/Infinity、目标方向冲突、超长预测封顶。
 - 分步 Schema 严格字段和数值边界。
 - 进度恢复及 Decimal 的 JSON 安全转换。
-- 重复保存、旧版本冲突、乱序保存、并发写入。
-- 不完整 Profile 禁止提交。
+- 重复保存、幂等键冲突、旧版本冲突、乱序保存、并发写入。
+- 不完整 Profile 禁止提交和已完成 Session 禁止继续修改。
 - 未付费 DTO 受保护字段防泄漏。
 - Mock 支付幂等性及付费前后结果访问切换。
 - 移动端真实浏览器中的创建、填写、刷新恢复、提交、解锁和付费后刷新。
+- 真实 PostgreSQL 上的 API 重放、乱序保存、恢复和并发版本竞争。
 
-CI 在 Push 和 Pull Request 时执行依赖安装、Lint、类型检查、Vitest、生产构建，并在 PostgreSQL 服务上运行 Playwright 端到端测试。
+### 为什么覆盖这些场景
+
+测试优先覆盖系统的信任边界和状态转换：客户端输入不能直接可信；分步写入会遇到重试、乱序和并发；结果接口必须证明受保护字段没有被序列化；支付必须同时证明幂等和权限状态持久化。它们比单纯扩大页面快照数量更能直接证明挑战要求中的后端正确性。
+
+### 暂未覆盖及原因
+
+- 真实支付网关、签名 Webhook、退款和对账：挑战明确要求 Mock 支付，生产支付需要独立合规设计。
+- 临床有效性和医疗法规验证：当前算法仅为工程演示，不构成医疗建议。
+- Safari/Firefox 全矩阵和大规模负载测试：三天挑战优先保证 Chromium 移动端主链路与核心后端边界；上线前应补浏览器兼容、容量和长稳测试。
+- 自动化灾备恢复演练：已经提供每日备份与恢复手册，但正式生产前仍需在隔离环境做周期性恢复演练。
+
+CI 在 Push 和 Pull Request 时执行依赖安装、Lint、类型检查、Vitest、生产构建，并在 PostgreSQL 服务上运行 Playwright 端到端测试。详细策略见 [Testing Strategy](docs/TESTING.md)。
 
 ## 生产部署
 
@@ -235,4 +273,7 @@ docker compose --env-file .env.production up -d
 - [运维手册](docs/OPERATIONS.md)
 - [安全说明](docs/SECURITY.md)
 - [测试策略](docs/TESTING.md)
+- [验收与 cURL 重放](docs/DEMO.md)
+- [要求追踪矩阵](docs/REQUIREMENTS_TRACEABILITY.md)
+- [提交邮件模板与检查清单](docs/SUBMISSION.md)
 - [AI 协作复盘](docs/AI_RETROSPECTIVE.md)
