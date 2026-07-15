@@ -27,6 +27,7 @@ AI assistance was used to convert a challenge brief into an executable plan, sca
 - A first leakage assertion treated locked-section names as leaked values; tests were corrected to inspect object keys and protected result values separately.
 - Step replay initially accepted the same idempotency key with a different payload; payload hashes and conflict handling were added.
 - Completed Sessions initially allowed new step mutations; the API now rejects them.
+- The first Docker dependency layer ran `npm ci` before copying the Prisma schema, so the `postinstall` generation hook failed; dependency installation now skips lifecycle scripts and the builder runs Prisma generation only after the full source is present.
 
 ## Limitations and review requirements
 

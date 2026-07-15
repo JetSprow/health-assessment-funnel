@@ -8,7 +8,7 @@ RUN apt-get update \
 
 FROM base AS dependencies
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci --ignore-scripts
 
 FROM dependencies AS migrator
 COPY prisma.config.ts ./
