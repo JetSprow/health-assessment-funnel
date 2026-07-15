@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { createClientRequestId } from "@/lib/client-request-id";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type BmiCategory = "UNDERWEIGHT" | "NORMAL" | "OVERWEIGHT" | "OBESE";
@@ -40,7 +41,7 @@ const categoryLabels: Record<BmiCategory, string> = {
 
 export function ResultView({ sessionId }: { sessionId: string }) {
   const router = useRouter();
-  const paymentKey = useRef(`mock-pay-${crypto.randomUUID()}`);
+  const paymentKey = useRef(`mock-pay-${createClientRequestId()}`);
   const [result, setResult] = useState<ResultAccess | null>(null);
   const [phase, setPhase] = useState<"loading" | "ready" | "paying" | "error">("loading");
   const [message, setMessage] = useState("正在读取报告…");

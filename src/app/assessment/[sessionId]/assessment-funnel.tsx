@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { createClientRequestId } from "@/lib/client-request-id";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Gender = "MALE" | "FEMALE";
@@ -250,7 +251,7 @@ export function AssessmentFunnel({ sessionId }: { sessionId: string }) {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          requestId: `${currentStep.key}-${crypto.randomUUID()}`,
+          requestId: `${currentStep.key}-${createClientRequestId()}`,
           version,
           data: payloadForStep(profile, currentStep.key),
         }),
