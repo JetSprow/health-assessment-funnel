@@ -28,6 +28,7 @@ AI assistance was used to convert a challenge brief into an executable plan, sca
 - Step replay initially accepted the same idempotency key with a different payload; payload hashes and conflict handling were added.
 - Completed Sessions initially allowed new step mutations; the API now rejects them.
 - The first Docker dependency layer ran `npm ci` before copying the Prisma schema, so the `postinstall` generation hook failed; dependency installation now skips lifecycle scripts and the builder runs Prisma generation only after the full source is present.
+- Skipping dependency lifecycle scripts also left the migration image without a cached Prisma schema engine, making startup depend on a runtime download; the migrator now generates during image build so releases do not require that download when migrations run.
 
 ## Limitations and review requirements
 

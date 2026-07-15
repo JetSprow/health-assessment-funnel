@@ -13,6 +13,7 @@ RUN npm ci --ignore-scripts
 FROM dependencies AS migrator
 COPY prisma.config.ts ./
 COPY prisma ./prisma
+RUN npx prisma generate
 CMD ["npx", "prisma", "migrate", "deploy"]
 
 FROM dependencies AS builder
